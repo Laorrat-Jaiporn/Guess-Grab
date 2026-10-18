@@ -1,0 +1,29 @@
+{
+  "routes": [
+    {
+      "routePath": "/api/detect",
+      "mountPath": "/api",
+      "method": "GET",
+      "module": [
+        "api/detect.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/detect",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/detect.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/detect.backup",
+      "mountPath": "/api",
+      "method": "",
+      "module": [
+        "api/detect.backup.js:onRequest"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f0eee6">
+<title>Guess &amp; Grab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app">
+
+  <!-- HOME -->
+  <section id="home" class="screen" aria-labelledby="homeTitle">
+    <svg class="logo" viewBox="0 0 120 100" width="120" height="100" role="img" aria-label="Smiling camera face">
+      <path d="M22 22 Q22 12 34 12 L44 12 Q48 4 60 4 Q72 4 76 12 L86 12 Q98 12 98 22 L98 78 Q98 90 86 90 L34 90 Q22 90 22 78 Z" fill="#f2c1b6" stroke="#6b5546" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="48" cy="48" r="4.5" fill="#3b2a20"/><circle cx="72" cy="48" r="4.5" fill="#3b2a20"/>
+      <path d="M48 62 Q60 72 72 62" fill="none" stroke="#3b2a20" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <h1 id="homeTitle" class="brand big"><span>Guess</span><span class="amp">&amp;</span><span class="grab">Grab</span></h1>
+    <div class="stack">
+      <button id="btnStart" class="btn peach" type="button">Start Game</button>
+      <button id="btnHow" class="btn peach" type="button" aria-haspopup="dialog">How to Play</button>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section id="setup" class="screen" aria-labelledby="setupTitle" hidden>
+    <h1 id="setupTitle" class="brand"><span>Guess</span> <span class="amp">&amp;</span> <span class="grab">Grab</span></h1>
+    <form id="setupForm" class="frame form" novalidate>
+      <div class="field teal">
+        <label for="players">Number of players</label>
+        <select id="players"><option value="1">1 player</option><option value="2" selected>2 players</option></select>
+      </div>
+      <div class="field peach" id="wrapP1">
+        <label for="name1">Player 1 name</label>
+        <input id="name1" type="text" maxlength="16" placeholder="Player 1" autocomplete="off">
+      </div>
+      <div class="field peach" id="wrapP2">
+        <label for="name2">Player 2 name</label>
+        <input id="name2" type="text" maxlength="16" placeholder="Player 2" autocomplete="off">
+      </div>
+      <div class="field teal">
+        <label for="count">Objects per player</label>
+        <select id="count"><option value="3">3 objects</option><option value="5" selected>5 objects</option><option value="10">10 objects</option></select>
+      </div>
+      <div class="field teal">
+        <label for="time">Time per object</label>
+        <select id="time">
+          <option value="30000" selected>30 seconds</option>
+          <option value="60000">1 minute</option>
+          <option value="90000">1 minute 30 seconds</option>
+          <option value="120000">2 minutes</option>
+        </select>
+      </div>
+      <p id="setupSummary" class="muted center"></p>
+      <p id="setupError" class="msg error" role="alert" hidden></p>
+      <button id="btnBegin" class="btn pink" type="submit">Start Game</button>
+      <button id="btnSetupBack" class="btn link" type="button">Back to Home</button>
+    </form>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="screen game" aria-labelledby="gameTitle" hidden>
+    <h1 id="gameTitle" class="brand"><span>Guess</span> <span class="amp">&amp;</span> <span class="grab">Grab</span></h1>
+    <div class="pills">
+      <div class="pill orange" id="timerPill">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="sr-only">Time left:</span><b id="timer">0:30</b>
+      </div>
+      <div class="pill orange">Score <b id="score">0</b></div>
+    </div>
+    <p id="turnInfo" class="turninfo"></p>
+    <div id="clueBox" class="clue">
+      <span class="lbl">Clue</span>
+      <p id="clueText">&nbsp;</p>
+      <p id="answerLine" class="answer" hidden>Answer: <b id="answerName"></b></p>
+    </div>
+    <div class="camframe">
+      <div class="stage" id="stage">
+        <video id="cam" playsinline muted autoplay aria-label="Live camera preview"></video>
+        <canvas id="overlay" aria-hidden="true"></canvas>
+        <div id="ov" class="ov" hidden>
+          <div id="ovTitle" class="ov-title"></div>
+          <div id="ovText" class="ov-text"></div>
+          <button id="ovBtn" class="btn peach" type="button" hidden>Continue</button>
+        </div>
+        <div id="camErr" class="ov camerr" hidden role="alert">
+          <div class="ov-title">Camera problem</div>
+          <div id="camErrText" class="ov-text"></div>
+          <div class="row">
+            <button id="camRetry" class="btn peach" type="button">Try Again</button>
+            <button id="camHome" class="btn outline" type="button">Back to Home</button>
+          </div>
+        </div>
+        <div id="toast" class="toast" role="status"></div>
+      </div>
+    </div>
+    <p id="detStatus" class="detstatus info" role="status" aria-live="polite"><span id="detIcon" aria-hidden="true">…</span> <span id="detText">Starting the camera...</span></p>
+    <div id="sb" class="sb" hidden></div>
+    <button id="btnGiveUp" class="btn coral wide" type="button" disabled>Give Up</button>
+    <button id="btnSkip" class="btn outline wide" type="button" disabled>Skip</button>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="result" class="screen" aria-labelledby="resTitle" hidden>
+    <h1 id="resTitle" class="brand">Results</h1>
+    <div class="frame resframe">
+      <p id="resBanner" class="banner" role="status"></p>
+      <p id="resMeta" class="muted center"></p>
+      <div id="resCards" class="rescards"></div>
+      <div class="row center-row">
+        <button id="btnAgain" class="btn orange-btn" type="button">Play Again</button>
+        <button id="btnHome" class="btn outline" type="button">Back to Home</button>
+      </div>
+    </div>
+    <div class="frame board" id="boardWrap">
+      <h2>Top Scores</h2>
+      <ol id="board"></ol>
+      <p class="note">Saved in this browser only (not synced between devices).</p>
+      <button id="btnClearBoard" class="btn link" type="button">Clear Top Scores</button>
+    </div>
+  </section>
+</main>
+
+<!-- HOW TO PLAY -->
+<div id="howModal" class="modal" hidden>
+  <div class="modal-box frame" role="dialog" aria-modal="true" aria-labelledby="howTitle">
+    <h2 id="howTitle" class="pilltitle">How to Play</h2>
+    <ol class="steps">
+      <li><span class="num o">1</span><div><h3>Read the Clue</h3><p>Read the description carefully to understand which object you need to find.</p></div></li>
+      <li><span class="num t">2</span><div><h3>Find the Object</h3><p>Look around you and show the correct real-world object to the camera.</p></div></li>
+      <li><span class="num o">3</span><div><h3>Earn Points</h3><p>Find the correct object as quickly as possible to earn more points. The answer will be revealed during the final 10 seconds.</p></div></li>
+      <li><span class="num t">4</span><div><h3>Skip or Give Up</h3><p>Skip an object if you cannot find it. You can also give up, but your remaining turns will count as zero points.</p></div></li>
+    </ol>
+    <button id="howClose" class="btn peach" type="button">I Understand</button>
+  </div>
+</div>
+
+<!-- GIVE UP CONFIRM -->
+<div id="giveModal" class="modal" hidden>
+  <div class="modal-box frame small" role="alertdialog" aria-modal="true" aria-labelledby="giveTitle" aria-describedby="giveText">
+    <h2 id="giveTitle" class="pilltitle">Give up?</h2>
+    <p id="giveText" class="center"></p>
+    <p class="muted center">The timer is paused while you decide.</p>
+    <div class="row">
+      <button id="giveKeep" class="btn peach" type="button">Keep Playing</button>
+      <button id="giveYes" class="btn coral" type="button">Give Up</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
